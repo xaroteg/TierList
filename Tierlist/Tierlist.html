@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tier List Maker</title>
+  <link rel="stylesheet" href="CSS/TierlistBG.css">
+  <script src="JavaScript/dom-to-image.min.js" defer></script>
+  <script src="JavaScript/TierlistNames.js" defer></script>
+</head>
+<body>
+  <main>
+    <h1>Tier List</h1>
+    <div class="title-edit-container">
+      <label for="title-input">Title:</label>
+      <input type="text" id="title-input" placeholder="Tier List" value="Tier List">
+    </div>
+    <p>Drag images into a tier. Add images by dropping files or choosing them from your computer.</p>
+
+    <section id="tiers" aria-label="Tier list"></section>
+
+    <div class="selection-controls">
+      <select id="target-tier-select">
+        <option value="">Select a tier...</option>
+        <option value="S">S</option>
+        <option value="A">A</option>
+        <option value="B">B</option>
+        <option value="C">C</option>
+        <option value="D">D</option>
+        <option value="F">F</option>
+        <option value="bank">Unsorted</option>
+      </select>
+      <button id="move-selected-btn" disabled>Move Selected</button>
+      <button id="remove-selected-btn" disabled>Remove Selected</button>
+      <button id="deselect-all-btn">Clear Selection</button>
+    </div>
+
+    <section class="game-bank" aria-label="Unsorted games">
+      <div class="bank-title">Unsorted images</div>
+
+      <div class="bank-content">
+        <div class="bank-items dropzone" id="game-bank"></div>
+
+        <div class="upload-panel">
+          <input
+            id="game-name-input"
+            type="text"
+            placeholder="Name (optional)"
+            aria-label="Name"
+          >
+
+          <label id="image-drop-area" for="image-file-input">
+            Drop images here or click to browse
+            <input
+              id="image-file-input"
+              type="file"
+              accept="image/*"
+              multiple
+            >
+          </label>
+
+          <form id="add-game-form">
+            <input
+              id="game-image-url"
+              type="url"
+              placeholder="Or paste an image URL"
+              aria-label="Image URL"
+            >
+            <button type="submit">Add by URL</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <label class="names-toggle">
+      <input type="checkbox" id="toggle-names">
+      Show names
+    </label>
+
+    <button id="download-png" type="button">
+      Download the page as a PNG
+    </button>
+  </main>
+</body>
+</html>

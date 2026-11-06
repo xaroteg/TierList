@@ -1,0 +1,477 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 24px;
+  color: #f4f4f5;
+  background: #18181b;
+  font-family: system-ui, sans-serif;
+}
+
+main {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+h1 {
+  margin: 0 0 8px;
+}
+
+p {
+  margin: 0 0 20px;
+  color: #b4b4bd;
+}
+
+/* Frame around the tier list */
+#tiers {
+  padding: 12px;
+  border: 2px solid #52525b;
+  border-radius: 0px;
+  background: #18181b;
+}
+
+/* Tier rows */
+.tier {
+  display: flex;
+  min-height: 110px;
+  margin-bottom: 10px;
+  overflow: hidden;
+  border: 2px solid #52525b;
+  border-radius: 0px;
+}
+
+.tier-label {
+  display: grid;
+  flex: 0 0 90px;
+  place-items: center;
+  color: #18181b;
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.tier-items,
+.bank-items {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 8px;
+  min-width: 0;
+  min-height: 110px;
+  padding: 8px;
+}
+
+.tier-items {
+  background: #27272a;
+}
+
+/* Game cards */
+.game-card {
+  position: relative;
+  height: 92px;
+  flex: 0 0 92px;
+  overflow: hidden;
+  border-radius: 0px;
+  background: #27272a;
+  cursor: grab;
+  user-select: none;
+}
+
+.game-card img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.game-card:active {
+  cursor: grabbing;
+}
+
+/* Game names, shown only when the toggle is on */
+.game-name {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 14px 4px 4px;
+  overflow: hidden;
+  background: linear-gradient(transparent, #000d);
+  font-size: 11px;
+  line-height: 1.2;
+  text-align: center;
+  word-break: break-word;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.show-game-names .game-name {
+  opacity: 1;
+}
+
+.delete-game-button {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  z-index: 2;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 0%;
+  color: #fff;
+  background: #18181be8;
+  font-size: 18px;
+  line-height: 24px;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+
+.game-card:hover .delete-game-button,
+.game-card:focus-within .delete-game-button {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.delete-game-button:hover {
+  background: #dc2626;
+}
+
+/* Magnifier icon in the bottom-right corner */
+/* Magnifier icon in the top-left corner of each game cover */
+.zoom-game-button {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  color: #fff;
+  background: #18181bb8;
+  cursor: zoom-in;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s, background 0.2s;
+}
+
+.zoom-game-button svg {
+  width: 14px;
+  height: 14px;
+}
+
+.game-card:hover .zoom-game-button,
+.game-card:focus-within .zoom-game-button {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.zoom-game-button:hover {
+  background: #4f46e5;
+}
+
+.dragging {
+  opacity: 0.45;
+}
+
+/* Unsorted games section */
+.game-bank {
+  margin-top: 22px;
+  overflow: hidden;
+  border: 1px solid #3f3f46;
+  border-radius: 0px;
+  background: #27272a;
+}
+
+.bank-title {
+  padding: 10px;
+  color: #d4d4d8;
+  font-weight: 700;
+}
+
+.bank-content {
+  display: flex;
+  align-items: stretch;
+}
+
+.bank-items {
+  min-height: 150px;
+}
+
+/* Image upload panel */
+.upload-panel {
+  display: flex;
+  flex: 0 0 250px;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+  border-left: 1px solid #3f3f46;
+}
+
+.upload-panel input,
+.upload-panel button {
+  width: 100%;
+  min-width: 0;
+  padding: 9px;
+  border: 1px solid #52525b;
+  border-radius: 0px;
+  color: #f4f4f5;
+  background: #18181b;
+  font: inherit;
+}
+
+.upload-panel button {
+  border: 0;
+  color: #18181b;
+  background: #a1a1aa;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.upload-panel button:hover {
+  background: #d4d4d8;
+}
+
+.upload-panel form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+#image-drop-area {
+  display: grid;
+  min-height: 90px;
+  place-items: center;
+  padding: 12px;
+  border: 2px dashed #71717a;
+  border-radius: 0px;
+  color: #d4d4d8;
+  cursor: pointer;
+  text-align: center;
+}
+
+#image-drop-area.drag-over {
+  border-color: #a1a1aa;
+  background: #3f3f46;
+}
+
+#image-file-input {
+  display: none;
+}
+
+/* Game names toggle */
+.names-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 16px 12px 0;
+  color: #f4f4f5;
+  cursor: pointer;
+}
+
+/* Download button */
+#download-png {
+  display: inline-block;
+  margin: 12px 0;
+  padding: 10px 16px;
+  border: 1px solid #818cf8;
+  border-radius: 0px;
+  color: #fff;
+  background: #4f46e5;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+
+#download-png:hover {
+  background: #4338ca;
+  box-shadow: 0 4px 12px #0006;
+  transform: translateY(-1px);
+}
+
+#download-png:focus-visible {
+  outline: 3px solid #c4b5fd;
+  outline-offset: 3px;
+}
+
+#download-png:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+/* Zoom overlay */
+#zoom-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  background: #000c;
+}
+
+#zoom-overlay[hidden] {
+  display: none;
+}
+
+#zoom-image {
+  max-width: 95vw;
+  max-height: 95vh;
+  object-fit: contain;
+  box-shadow: 0 8px 30px #0008;
+}
+
+#zoom-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  color: #fff;
+  background: #18181b;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+#zoom-close:hover {
+  background: #dc2626;
+}
+
+/* Hide overlay buttons while exporting */
+.exporting .zoom-game-button,
+.exporting .delete-game-button {
+  display: none;
+}
+
+/* Selection state */
+.game-card.selected {
+  outline: 2px solid #4f46e5;
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.3);
+}
+
+/* Selection controls */
+.selection-controls {
+  display: flex;
+  gap: 8px;
+  margin: 12px 0;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.selection-controls select {
+  padding: 8px 12px;
+  border: 1px solid #52525b;
+  border-radius: 0px;
+  color: #f4f4f5;
+  background: #18181b;
+  font: inherit;
+  cursor: pointer;
+}
+
+.selection-controls button {
+  padding: 8px 16px;
+  border: 1px solid #52525b;
+  border-radius: 0px;
+  color: #f4f4f5;
+  background: #3f3f46;
+  font: inherit;
+  cursor: pointer;
+}
+
+.selection-controls button:hover:not(:disabled) {
+  background: #52525b;
+}
+
+.selection-controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Title edit */
+.title-edit-container {
+  display: flex;
+  gap: 8px;
+  margin: 8px 0 16px;
+  align-items: center;
+}
+
+.title-edit-container label {
+  color: #d4d4d8;
+  font-weight: 700;
+}
+
+.title-edit-container input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #52525b;
+  border-radius: 0px;
+  color: #f4f4f5;
+  background: #18181b;
+  font: inherit;
+}
+
+/* Touch devices */
+@media (hover: none) {
+  .delete-game-button,
+  .zoom-game-button {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  body {
+    padding: 14px;
+  }
+
+  .game-card {
+    height: 68px;
+    flex-basis: 68px;
+  }
+
+  .zoom-game-button {
+    width: 20px;
+    height: 20px;
+  }
+
+  .zoom-game-button svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .tier-label {
+    flex-basis: 60px;
+  }
+
+  .bank-content {
+    flex-direction: column;
+  }
+
+  .upload-panel {
+    width: 100%;
+    flex-basis: auto;
+    border-top: 1px solid #3f3f46;
+    border-left: 0;
+  }
+
+  .selection-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
