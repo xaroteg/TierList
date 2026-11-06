@@ -292,8 +292,8 @@ body {
 /* ---------- Cards ---------- */
 .tierlist .game-card {
   position: relative;
-  height: 92px;
-  flex: 0 0 92px;
+  height: 110px;
+  flex: 0 0 110px;
   overflow: hidden;
   border-radius: var(--tl-radius-sm);
   background: var(--tl-surface);
