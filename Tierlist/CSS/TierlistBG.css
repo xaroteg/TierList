@@ -1,7 +1,36 @@
-* {
+/* ==========================================================
+   Tier List Maker
+   Everything is scoped under .tierlist so it can't leak into
+   (or be broken by) the rest of your site.
+
+   To match your site, change the variables below. Nothing else
+   needs touching: e.g. set --tl-font to your site's font stack,
+   or --tl-accent to your brand color.
+   ========================================================== */
+.tierlist {
+  --tl-bg: #18181b;
+  --tl-surface: #27272a;
+  --tl-surface-2: #202023;
+  --tl-border: #3f3f46;
+  --tl-border-strong: #52525b;
+  --tl-text: #f4f4f5;
+  --tl-muted: #a1a1aa;
+  --tl-accent: #4f46e5;
+  --tl-accent-hover: #4338ca;
+  --tl-accent-soft: #818cf8;
+  --tl-danger: #dc2626;
+  --tl-radius: 0px;
+  --tl-radius-sm: 0px;
+  --tl-font: system-ui, sans-serif;
+
   box-sizing: border-box;
+  max-width: 1000px;
+  margin: 0 auto;
+  color: var(--tl-text);
+  font-family: var(--tl-font);
 }
 
+/* Original page styling */
 body {
   margin: 0;
   padding: 24px;
@@ -10,49 +39,154 @@ body {
   font-family: system-ui, sans-serif;
 }
 
-main {
-  max-width: 1000px;
-  margin: 0 auto;
+.tierlist *,
+.tierlist *::before,
+.tierlist *::after {
+  box-sizing: border-box;
 }
 
-h1 {
+.tierlist h1 {
   margin: 0 0 8px;
+  font-size: 2rem;
+  line-height: 1.2;
 }
 
-p {
+.tierlist .tl-intro {
   margin: 0 0 20px;
-  color: #b4b4bd;
+  color: var(--tl-muted);
+  line-height: 1.5;
 }
 
-/* Frame around the tier list */
-#tiers {
+/* ---------- Shared buttons ---------- */
+.tierlist .tl-btn {
+  padding: 8px 16px;
+  border: 1px solid var(--tl-border-strong);
+  border-radius: var(--tl-radius-sm);
+  color: var(--tl-text);
+  background: var(--tl-surface);
+  font: inherit;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, transform 0.15s;
+}
+
+.tierlist .tl-btn:hover:not(:disabled) {
+  background: var(--tl-border-strong);
+}
+
+.tierlist .tl-btn:focus-visible {
+  outline: 3px solid var(--tl-accent-soft);
+  outline-offset: 2px;
+}
+
+.tierlist .tl-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.tierlist .tl-btn-primary {
+  border-color: var(--tl-accent-soft);
+  background: var(--tl-accent);
+  font-weight: 600;
+}
+
+.tierlist .tl-btn-primary:hover:not(:disabled) {
+  background: var(--tl-accent-hover);
+}
+
+.tierlist .tl-btn-accent {
+  border-style: dashed;
+  border-color: var(--tl-accent-soft);
+  color: var(--tl-accent-soft);
+  background: transparent;
+  font-weight: 600;
+}
+
+.tierlist .tl-btn-accent:hover:not(:disabled) {
+  color: #fff;
+  background: var(--tl-accent);
+}
+
+.tierlist .tl-btn-danger:hover:not(:disabled) {
+  border-color: var(--tl-danger);
+  background: var(--tl-danger);
+}
+
+/* ---------- Title ---------- */
+.tierlist .title-edit-container {
+  display: flex;
+  gap: 8px;
+  margin: 8px 0 16px;
+  align-items: center;
+}
+
+.tierlist .title-edit-container label {
+  color: var(--tl-muted);
+  font-weight: 700;
+}
+
+.tierlist .title-edit-container input {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid var(--tl-border-strong);
+  border-radius: var(--tl-radius-sm);
+  color: var(--tl-text);
+  background: var(--tl-surface-2);
+  font: inherit;
+}
+
+.tierlist .title-edit-container input:focus-visible {
+  outline: 2px solid var(--tl-accent-soft);
+  outline-offset: 1px;
+}
+
+/* ---------- Tier list frame ---------- */
+.tierlist #tiers {
   padding: 12px;
-  border: 2px solid #52525b;
-  border-radius: 0px;
-  background: #18181b;
+  border: 2px solid var(--tl-border-strong);
+  border-radius: var(--tl-radius);
+  background: var(--tl-bg);
 }
 
-/* Tier rows */
-.tier {
+.tierlist .tier {
   display: flex;
   min-height: 110px;
   margin-bottom: 10px;
   overflow: hidden;
-  border: 2px solid #52525b;
-  border-radius: 0px;
+  border: 2px solid var(--tl-border-strong);
+  border-radius: var(--tl-radius-sm);
+  background: var(--tl-surface);
 }
 
-.tier-label {
+.tierlist .tier:last-child {
+  margin-bottom: 0;
+}
+
+.tierlist .tier-label {
   display: grid;
-  flex: 0 0 90px;
+  flex: 0 0 130px;
   place-items: center;
-  color: #18181b;
+  min-width: 130px;
+  padding: 8px;
   font-size: 1.5rem;
   font-weight: 800;
+  line-height: 1.2;
+  text-align: center;
+  word-break: break-word;
+  white-space: normal;
+  cursor: text;
+  transition: background-color 0.15s;
 }
 
-.tier-items,
-.bank-items {
+.tierlist .tier-label[contenteditable="true"] {
+  outline: none;
+}
+
+.tierlist .tier-label[contenteditable="true"]:focus {
+  box-shadow: inset 0 0 0 3px rgba(0, 0, 0, 0.35);
+}
+
+.tierlist .tier-items,
+.tierlist .bank-items {
   display: flex;
   flex: 1;
   flex-wrap: wrap;
@@ -63,23 +197,111 @@ p {
   padding: 8px;
 }
 
-.tier-items {
-  background: #27272a;
+.tierlist .tier-items {
+  background: var(--tl-surface);
 }
 
-/* Game cards */
-.game-card {
+.tierlist .dropzone.drag-hover {
+  background: #3b3b42;
+  box-shadow: inset 0 0 0 2px var(--tl-accent-soft);
+}
+
+/* ---------- Per-tier controls (hidden in the PNG export) ---------- */
+.tierlist .tier-controls {
+  display: flex;
+  flex: 0 0 44px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 6px;
+  border-left: 1px solid var(--tl-border);
+  background: var(--tl-surface-2);
+}
+
+.tierlist .tier-btn {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid var(--tl-border-strong);
+  border-radius: 0;
+  color: var(--tl-text);
+  background: var(--tl-surface);
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.tierlist .tier-btn:hover:not(:disabled) {
+  background: var(--tl-border-strong);
+}
+
+.tierlist .tier-btn.tier-delete:hover:not(:disabled) {
+  border-color: var(--tl-danger);
+  background: var(--tl-danger);
+}
+
+.tierlist .tier-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.tierlist .tier-btn:focus-visible,
+.tierlist .tier-color-input:focus-visible {
+  outline: 2px solid var(--tl-accent-soft);
+  outline-offset: 1px;
+}
+
+.tierlist .tier-color-input {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 2px solid var(--tl-border-strong);
+  border-radius: 0;
+  background: none;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  overflow: hidden;
+}
+
+.tierlist .tier-color-input::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.tierlist .tier-color-input::-webkit-color-swatch {
+  border: 0;
+  border-radius: 0;
+}
+
+.tierlist .tier-color-input::-moz-color-swatch {
+  border: 0;
+  border-radius: 0;
+}
+
+.tierlist .tier-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 0 4px;
+}
+
+/* ---------- Cards ---------- */
+.tierlist .game-card {
   position: relative;
   height: 92px;
   flex: 0 0 92px;
   overflow: hidden;
-  border-radius: 0px;
-  background: #27272a;
+  border-radius: var(--tl-radius-sm);
+  background: var(--tl-surface);
   cursor: grab;
   user-select: none;
 }
 
-.game-card img {
+.tierlist .game-card img {
   display: block;
   width: 100%;
   height: 100%;
@@ -87,12 +309,41 @@ p {
   object-position: center;
 }
 
-.game-card:active {
+.tierlist .game-card:active {
   cursor: grabbing;
 }
 
-/* Game names, shown only when the toggle is on */
-.game-name {
+.tierlist .game-card.selected {
+  outline: 2px solid var(--tl-accent-soft);
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.35);
+}
+
+.tierlist .game-card.dragging {
+  opacity: 0.45;
+}
+
+/* Insertion marker while dragging an image onto another one */
+.tierlist .game-card.insert-before::before,
+.tierlist .game-card.insert-after::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 3;
+  width: 4px;
+  background: var(--tl-accent-soft);
+  pointer-events: none;
+}
+
+.tierlist .game-card.insert-before::before {
+  left: 0;
+}
+
+.tierlist .game-card.insert-after::before {
+  right: 0;
+}
+
+.tierlist .game-name {
   position: absolute;
   right: 0;
   bottom: 0;
@@ -100,6 +351,7 @@ p {
   padding: 14px 4px 4px;
   overflow: hidden;
   background: linear-gradient(transparent, #000d);
+  color: #fff;
   font-size: 11px;
   line-height: 1.2;
   text-align: center;
@@ -111,47 +363,15 @@ p {
   transition: opacity 0.2s;
 }
 
-.show-game-names .game-name {
+.tierlist.show-game-names .game-name {
   opacity: 1;
 }
 
-.delete-game-button {
+.tierlist .delete-game-button,
+.tierlist .zoom-game-button {
   position: absolute;
   top: 4px;
-  right: 4px;
   z-index: 2;
-  width: 24px;
-  height: 24px;
-  padding: 0;
-  border: 0;
-  border-radius: 0%;
-  color: #fff;
-  background: #18181be8;
-  font-size: 18px;
-  line-height: 24px;
-  cursor: pointer;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s;
-}
-
-.game-card:hover .delete-game-button,
-.game-card:focus-within .delete-game-button {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.delete-game-button:hover {
-  background: #dc2626;
-}
-
-/* Magnifier icon in the bottom-right corner */
-/* Magnifier icon in the top-left corner of each game cover */
-.zoom-game-button {
-  position: absolute;
-  top: 4px;
-  left: 4px;
-  z-index: 1;
   display: grid;
   place-items: center;
   width: 24px;
@@ -160,160 +380,192 @@ p {
   border: 0;
   border-radius: 0;
   color: #fff;
-  background: #18181bb8;
-  cursor: zoom-in;
+  background: #18181bd0;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.2s, background 0.2s;
 }
 
-.zoom-game-button svg {
+.tierlist .delete-game-button {
+  right: 4px;
+  font-size: 18px;
+  line-height: 24px;
+  cursor: pointer;
+}
+
+.tierlist .zoom-game-button {
+  left: 4px;
+  cursor: zoom-in;
+}
+
+.tierlist .zoom-game-button svg {
   width: 14px;
   height: 14px;
 }
 
-.game-card:hover .zoom-game-button,
-.game-card:focus-within .zoom-game-button {
+.tierlist .game-card:hover .delete-game-button,
+.tierlist .game-card:focus-within .delete-game-button,
+.tierlist .game-card:hover .zoom-game-button,
+.tierlist .game-card:focus-within .zoom-game-button {
   opacity: 1;
   pointer-events: auto;
 }
 
-.zoom-game-button:hover {
-  background: #4f46e5;
+.tierlist .delete-game-button:hover {
+  background: var(--tl-danger);
 }
 
-.dragging {
-  opacity: 0.45;
+.tierlist .zoom-game-button:hover {
+  background: var(--tl-accent);
 }
 
-/* Unsorted games section */
-.game-bank {
-  margin-top: 22px;
+/* ---------- Selection controls ---------- */
+.tierlist .selection-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.tierlist .selection-controls select {
+  padding: 8px 12px;
+  border: 1px solid var(--tl-border-strong);
+  border-radius: var(--tl-radius-sm);
+  color: var(--tl-text);
+  background: var(--tl-surface-2);
+  font: inherit;
+  cursor: pointer;
+}
+
+/* ---------- Unsorted bank ---------- */
+.tierlist .game-bank {
+  margin-top: 16px;
   overflow: hidden;
-  border: 1px solid #3f3f46;
-  border-radius: 0px;
-  background: #27272a;
+  border: 1px solid var(--tl-border);
+  border-radius: var(--tl-radius);
+  background: var(--tl-surface);
 }
 
-.bank-title {
-  padding: 10px;
-  color: #d4d4d8;
+.tierlist .bank-title {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--tl-border);
+  color: var(--tl-muted);
   font-weight: 700;
 }
 
-.bank-content {
+.tierlist .bank-content {
   display: flex;
   align-items: stretch;
 }
 
-.bank-items {
+.tierlist .bank-items {
   min-height: 150px;
 }
 
-/* Image upload panel */
-.upload-panel {
+.tierlist .upload-panel {
   display: flex;
   flex: 0 0 250px;
   flex-direction: column;
   gap: 8px;
   padding: 8px;
-  border-left: 1px solid #3f3f46;
+  border-left: 1px solid var(--tl-border);
 }
 
-.upload-panel input,
-.upload-panel button {
+.tierlist .upload-panel input[type="text"],
+.tierlist .upload-panel input[type="url"],
+.tierlist .upload-panel button {
   width: 100%;
   min-width: 0;
   padding: 9px;
-  border: 1px solid #52525b;
-  border-radius: 0px;
-  color: #f4f4f5;
-  background: #18181b;
+  border: 1px solid var(--tl-border-strong);
+  border-radius: var(--tl-radius-sm);
+  color: var(--tl-text);
+  background: var(--tl-surface-2);
   font: inherit;
 }
 
-.upload-panel button {
-  border: 0;
-  color: #18181b;
-  background: #a1a1aa;
-  font-weight: 700;
-  cursor: pointer;
+.tierlist .upload-panel button.tl-btn-primary {
+  border-color: var(--tl-accent-soft);
+  background: var(--tl-accent);
 }
 
-.upload-panel button:hover {
-  background: #d4d4d8;
-}
-
-.upload-panel form {
+.tierlist .upload-panel form {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-#image-drop-area {
+.tierlist #image-drop-area {
   display: grid;
   min-height: 90px;
   place-items: center;
   padding: 12px;
-  border: 2px dashed #71717a;
-  border-radius: 0px;
-  color: #d4d4d8;
+  border: 2px dashed var(--tl-border-strong);
+  border-radius: var(--tl-radius-sm);
+  color: var(--tl-muted);
   cursor: pointer;
   text-align: center;
+  transition: border-color 0.15s, background 0.15s;
 }
 
-#image-drop-area.drag-over {
-  border-color: #a1a1aa;
-  background: #3f3f46;
+.tierlist #image-drop-area:hover,
+.tierlist #image-drop-area.drag-over {
+  border-color: var(--tl-accent-soft);
+  background: var(--tl-border);
 }
 
-#image-file-input {
+.tierlist #image-file-input {
   display: none;
 }
 
-/* Game names toggle */
-.names-toggle {
+/* ---------- Footer ---------- */
+.tierlist .tl-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.tierlist .names-toggle {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  margin: 12px 16px 12px 0;
-  color: #f4f4f5;
   cursor: pointer;
 }
 
-/* Download button */
-#download-png {
-  display: inline-block;
-  margin: 12px 0;
-  padding: 10px 16px;
-  border: 1px solid #818cf8;
-  border-radius: 0px;
+.tierlist #download-png {
+  padding: 10px 18px;
+  border: 1px solid var(--tl-accent-soft);
+  border-radius: var(--tl-radius-sm);
   color: #fff;
-  background: #4f46e5;
+  background: var(--tl-accent);
   font: inherit;
   font-weight: 700;
   cursor: pointer;
   transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
 }
 
-#download-png:hover {
-  background: #4338ca;
+.tierlist #download-png:hover {
+  background: var(--tl-accent-hover);
   box-shadow: 0 4px 12px #0006;
   transform: translateY(-1px);
 }
 
-#download-png:focus-visible {
+.tierlist #download-png:focus-visible {
   outline: 3px solid #c4b5fd;
   outline-offset: 3px;
 }
 
-#download-png:disabled {
+.tierlist #download-png:disabled {
   cursor: wait;
   opacity: 0.65;
 }
 
-/* Zoom overlay */
-#zoom-overlay {
+/* ---------- Zoom overlay ---------- */
+.tierlist #zoom-overlay {
   position: fixed;
   inset: 0;
   z-index: 1000;
@@ -322,18 +574,19 @@ p {
   background: #000c;
 }
 
-#zoom-overlay[hidden] {
+.tierlist #zoom-overlay[hidden] {
   display: none;
 }
 
-#zoom-image {
+.tierlist #zoom-image {
   max-width: 95vw;
   max-height: 95vh;
   object-fit: contain;
+  border-radius: var(--tl-radius-sm);
   box-shadow: 0 8px 30px #0008;
 }
 
-#zoom-close {
+.tierlist #zoom-close {
   position: absolute;
   top: 16px;
   right: 16px;
@@ -341,137 +594,117 @@ p {
   height: 40px;
   padding: 0;
   border: 0;
-  border-radius: 0;
+  border-radius: var(--tl-radius-sm);
   color: #fff;
-  background: #18181b;
+  background: var(--tl-bg);
   font-size: 24px;
   cursor: pointer;
 }
 
-#zoom-close:hover {
-  background: #dc2626;
+.tierlist #zoom-close:hover {
+  background: var(--tl-danger);
 }
 
-/* Hide overlay buttons while exporting */
-.exporting .zoom-game-button,
-.exporting .delete-game-button {
+/* ---------- Hide interface-only bits while exporting ---------- */
+.tierlist .exporting .zoom-game-button,
+.tierlist .exporting .delete-game-button,
+.tierlist .exporting .tier-controls {
   display: none;
 }
 
-/* Selection state */
-.game-card.selected {
-  outline: 2px solid #4f46e5;
-  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.3);
-}
-
-/* Selection controls */
-.selection-controls {
-  display: flex;
-  gap: 8px;
-  margin: 12px 0;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.selection-controls select {
-  padding: 8px 12px;
-  border: 1px solid #52525b;
-  border-radius: 0px;
-  color: #f4f4f5;
-  background: #18181b;
-  font: inherit;
-  cursor: pointer;
-}
-
-.selection-controls button {
-  padding: 8px 16px;
-  border: 1px solid #52525b;
-  border-radius: 0px;
-  color: #f4f4f5;
-  background: #3f3f46;
-  font: inherit;
-  cursor: pointer;
-}
-
-.selection-controls button:hover:not(:disabled) {
-  background: #52525b;
-}
-
-.selection-controls button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* Title edit */
-.title-edit-container {
-  display: flex;
-  gap: 8px;
-  margin: 8px 0 16px;
-  align-items: center;
-}
-
-.title-edit-container label {
-  color: #d4d4d8;
-  font-weight: 700;
-}
-
-.title-edit-container input {
-  flex: 1;
-  padding: 8px;
-  border: 1px solid #52525b;
-  border-radius: 0px;
-  color: #f4f4f5;
-  background: #18181b;
-  font: inherit;
-}
-
-/* Touch devices */
+/* ---------- Touch devices ---------- */
 @media (hover: none) {
-  .delete-game-button,
-  .zoom-game-button {
+  .tierlist .delete-game-button,
+  .tierlist .zoom-game-button {
     opacity: 1;
     pointer-events: auto;
   }
 }
 
-/* Mobile */
+/* ---------- Mobile ---------- */
 @media (max-width: 600px) {
   body {
     padding: 14px;
   }
 
-  .game-card {
+  .tierlist .game-card {
     height: 68px;
     flex-basis: 68px;
   }
 
-  .zoom-game-button {
+  .tierlist .zoom-game-button {
     width: 20px;
     height: 20px;
   }
 
-  .zoom-game-button svg {
+  .tierlist .zoom-game-button svg {
     width: 12px;
     height: 12px;
   }
 
-  .tier-label {
-    flex-basis: 60px;
+  .tierlist .tier-label {
+    flex-basis: 64px;
+    min-width: 64px;
+    font-size: 1.1rem;
   }
 
-  .bank-content {
+  .tierlist .tier-controls {
+    flex-basis: 38px;
+    padding: 4px;
+  }
+
+  .tierlist .bank-content {
     flex-direction: column;
   }
 
-  .upload-panel {
+  .tierlist .upload-panel {
     width: 100%;
     flex-basis: auto;
-    border-top: 1px solid #3f3f46;
+    border-top: 1px solid var(--tl-border);
     border-left: 0;
   }
 
-  .selection-controls {
+  .tierlist .selection-controls {
     flex-direction: column;
     align-items: stretch;
   }
+}
+
+/* ---------- Rubber-band selection box ---------- */
+.tierlist .marquee {
+  position: fixed;
+  z-index: 950;
+  display: none;
+  border: 1px solid var(--tl-accent-soft);
+  background: rgba(79, 70, 229, 0.25);
+  pointer-events: none;
+}
+
+.tierlist.marquee-active {
+  cursor: crosshair;
+  user-select: none;
+}
+
+/* ---------- Picture shown under the cursor while dragging ---------- */
+.tierlist .drag-ghost {
+  position: absolute;
+  top: -1000px;
+  left: -1000px;
+}
+
+.tierlist .drag-count {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 6px;
+  border: 2px solid var(--tl-bg);
+  color: #fff;
+  background: var(--tl-accent);
+  font-size: 12px;
+  font-weight: 700;
 }

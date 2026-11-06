@@ -9,33 +9,31 @@
   <script src="JavaScript/TierlistNames.js" defer></script>
 </head>
 <body>
-  <main>
+  <main class="tierlist">
     <h1>Tier List</h1>
+
     <div class="title-edit-container">
-      <label for="title-input">Title:</label>
+      <label for="title-input">Title</label>
       <input type="text" id="title-input" placeholder="Tier List" value="Tier List">
     </div>
-    <p>Drag images into a tier. Add images by dropping files or choosing them from your computer.</p>
+
+    <p class="tl-intro">Drag images into a tier. Click images or drag a box around them to select several, then drag any selected image to move them all. Click a tier name to rename it, use the color swatch to recolor it.</p>
 
     <section id="tiers" aria-label="Tier list"></section>
 
-    <div class="selection-controls">
-      <select id="target-tier-select">
-        <option value="">Select a tier...</option>
-        <option value="S">S</option>
-        <option value="A">A</option>
-        <option value="B">B</option>
-        <option value="C">C</option>
-        <option value="D">D</option>
-        <option value="F">F</option>
-        <option value="bank">Unsorted</option>
-      </select>
-      <button id="move-selected-btn" disabled>Move Selected</button>
-      <button id="remove-selected-btn" disabled>Remove Selected</button>
-      <button id="deselect-all-btn">Clear Selection</button>
+    <div class="tier-toolbar">
+      <button type="button" id="add-tier-btn" class="tl-btn tl-btn-accent">+ Add tier</button>
     </div>
 
-    <section class="game-bank" aria-label="Unsorted games">
+    <div class="selection-controls">
+      <select id="target-tier-select" aria-label="Move selected images to"></select>
+      <button id="select-all-btn" class="tl-btn">Select All Unsorted</button>
+      <button id="move-selected-btn" class="tl-btn tl-btn-primary" disabled>Move Selected</button>
+      <button id="remove-selected-btn" class="tl-btn tl-btn-danger" disabled>Remove Selected</button>
+      <button id="deselect-all-btn" class="tl-btn">Clear Selection</button>
+    </div>
+
+    <section class="game-bank" aria-label="Unsorted images">
       <div class="bank-title">Unsorted images</div>
 
       <div class="bank-content">
@@ -66,20 +64,22 @@
               placeholder="Or paste an image URL"
               aria-label="Image URL"
             >
-            <button type="submit">Add by URL</button>
+            <button type="submit" class="tl-btn tl-btn-primary">Add by URL</button>
           </form>
         </div>
       </div>
     </section>
 
-    <label class="names-toggle">
-      <input type="checkbox" id="toggle-names">
-      Show names
-    </label>
+    <div class="tl-footer">
+      <label class="names-toggle">
+        <input type="checkbox" id="toggle-names">
+        Show names
+      </label>
 
-    <button id="download-png" type="button">
-      Download the page as a PNG
-    </button>
+      <button id="download-png" type="button">
+        Download the page as a PNG
+      </button>
+    </div>
   </main>
 </body>
 </html>
