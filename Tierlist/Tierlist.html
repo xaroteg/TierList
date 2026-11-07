@@ -10,7 +10,10 @@
 </head>
 <body>
   <main class="tierlist">
-    <h1>Tier List</h1>
+    <div class="tl-header">
+      <h1>Tier List</h1>
+      <button id="refresh-tier-list" type="button" class="tl-btn tl-btn-danger">Refresh Tier List</button>
+    </div>
 
     <div class="title-edit-container">
       <label for="title-input">Title:</label>
@@ -28,6 +31,7 @@
     <div class="selection-controls">
       <select id="target-tier-select" aria-label="Move selected images to"></select>
       <button id="select-all-btn" class="tl-btn">Select All Unsorted</button>
+      <button id="select-everything-btn" class="tl-btn">Select Everything</button>
       <button id="move-selected-btn" class="tl-btn tl-btn-primary" disabled>Move Selected</button>
       <button id="remove-selected-btn" class="tl-btn tl-btn-danger" disabled>Remove Selected</button>
       <button id="deselect-all-btn" class="tl-btn">Clear Selection</button>
@@ -75,6 +79,19 @@
         <input type="checkbox" id="toggle-names">
         Show names
       </label>
+
+      <div class="tl-presets">
+        <button id="save-tiers-preset" type="button" class="tl-download-btn">
+          Create preset: images in tiers
+        </button>
+        <button id="save-unsorted-preset" type="button" class="tl-download-btn">
+          Create preset: unsorted images
+        </button>
+        <button id="load-preset" type="button" class="tl-download-btn">
+          Load preset
+        </button>
+        <input id="preset-file-input" type="file" accept=".json,application/json" hidden>
+      </div>
 
       <button id="download-png" type="button">
         Download the page as a PNG
