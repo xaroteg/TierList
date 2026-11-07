@@ -24,7 +24,7 @@
   --tl-font: system-ui, sans-serif;
 
   box-sizing: border-box;
-  max-width: 1000px;
+  max-width: 1400px;
   margin: 0 auto;
   color: var(--tl-text);
   font-family: var(--tl-font);
@@ -49,6 +49,25 @@ body {
   margin: 0 0 8px;
   font-size: 2rem;
   line-height: 1.2;
+}
+
+/* Title on the left, "Refresh Tier List" button in the top right corner */
+.tierlist .tl-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.tierlist .tl-header h1 {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.tierlist .tl-header .tl-btn {
+  flex: none;
 }
 
 .tierlist .tl-intro {
@@ -536,7 +555,8 @@ body {
   cursor: pointer;
 }
 
-.tierlist #download-png {
+.tierlist #download-png,
+.tierlist .tl-download-btn {
   padding: 10px 18px;
   border: 1px solid var(--tl-accent-soft);
   border-radius: var(--tl-radius-sm);
@@ -548,20 +568,47 @@ body {
   transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
 }
 
-.tierlist #download-png:hover {
+.tierlist #download-png:hover,
+.tierlist .tl-download-btn:hover {
   background: var(--tl-accent-hover);
   box-shadow: 0 4px 12px #0006;
   transform: translateY(-1px);
 }
 
-.tierlist #download-png:focus-visible {
+.tierlist #download-png:focus-visible,
+.tierlist .tl-download-btn:focus-visible {
   outline: 3px solid #c4b5fd;
   outline-offset: 3px;
 }
 
-.tierlist #download-png:disabled {
+.tierlist #download-png:disabled,
+.tierlist .tl-download-btn:disabled {
   cursor: wait;
   opacity: 0.65;
+}
+
+/* Sits right next to the "Show names" toggle; the PNG button stays on the right */
+.tierlist .tl-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-right: auto;
+}
+
+/* Preset buttons: same size as the PNG button, but neutral gray instead of purple */
+.tierlist .tl-presets .tl-download-btn {
+  border-color: var(--tl-border-strong);
+  color: var(--tl-text);
+  background: var(--tl-surface);
+  font-weight: 600;
+}
+
+.tierlist .tl-presets .tl-download-btn:hover:not(:disabled) {
+  background: var(--tl-border-strong);
+}
+
+.tierlist .tl-presets .tl-download-btn:focus-visible {
+  outline-color: var(--tl-accent-soft);
 }
 
 /* ---------- Zoom overlay ---------- */
