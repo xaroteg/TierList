@@ -6,4 +6,7 @@ Functionality:
 * Downloading entire tier lists;
 * Zooming into the images;
 * Showing or hiding image names;
-* Adding several images into a single tier.
+* Adding several images into a single tier:
+* Drag-and-drop images just like in an OS;
+* Use presets to quickly return to your previous tier list;
+* Edit your tiers and rename your list.
