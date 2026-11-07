@@ -39,6 +39,8 @@ const moveSelectedBtn = document.querySelector("#move-selected-btn");
 const removeSelectedBtn = document.querySelector("#remove-selected-btn");
 const deselectAllBtn = document.querySelector("#deselect-all-btn");
 const selectAllBtn = document.querySelector("#select-all-btn");
+const selectEverythingBtn = document.querySelector("#select-everything-btn");
+const refreshTierListBtn = document.querySelector("#refresh-tier-list");
 const addTierBtn = document.querySelector("#add-tier-btn");
 const selectedGames = new Set();
 let tierCounter = 0;
@@ -470,6 +472,26 @@ selectAllBtn.addEventListener("click", () => {
   });
   updateSelectionControls();
 });
+// Select every image on the page: the ones in the tiers and the Unsorted ones.
+selectEverythingBtn.addEventListener("click", () => {
+  selectedGames.forEach(card => card.classList.remove("selected"));
+  selectedGames.clear();
+  app.querySelectorAll("#tiers .game-card, #game-bank .game-card").forEach(card => {
+    selectedGames.add(card);
+    card.classList.add("selected");
+  });
+  updateSelectionControls();
+});
+
+// Put every image that sits in a tier back into Unsorted. Tier names, colors
+// and order are kept; nothing is deleted.
+refreshTierListBtn.addEventListener("click", () => {
+  const placed = [...tiersElement.querySelectorAll(".game-card")];
+  if (placed.length === 0) return;
+  if (!confirm("Move every image from the tiers back to Unsorted?")) return;
+  placed.forEach(card => bankElement.append(card));
+  clearSelection();
+});
 deselectAllBtn.addEventListener("click", () => {
   selectedGames.forEach(card => card.classList.remove("selected"));
   selectedGames.clear();
@@ -694,6 +716,203 @@ window.addEventListener("beforeunload", e => {
   if (!document.querySelector(".game-card")) return;
   e.preventDefault();
   e.returnValue = ""; // required by some browsers to show the prompt
+});
+
+// ---------- Presets (saved as a plain .json file on your computer) ----------
+// "Games in tiers" saves the tier names, colors and order and the images placed
+// in each tier (not the Unsorted ones). "Unsorted games" saves every image, from
+// the tiers and from Unsorted, as one plain Unsorted list with no tiers. Images
+// are embedded in the file, so a preset works offline and doesn't depend on the
+// original image files.
+const PRESET_FORMAT = "tierlist-preset";
+const PRESET_VERSION = 1;
+const saveTiersPresetBtn = document.querySelector("#save-tiers-preset");
+const saveUnsortedPresetBtn = document.querySelector("#save-unsorted-preset");
+const loadPresetBtn = document.querySelector("#load-preset");
+const presetFileInput = document.querySelector("#preset-file-input");
+
+function blobToDataURL(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(blob);
+  });
+}
+
+// Pictures added from your computer are embedded as-is. Pictures added by web
+// link are downloaded and embedded when the site allows it; otherwise the link
+// itself is saved (it will then need an internet connection to show).
+async function embedImage(src) {
+  if (src.startsWith("data:")) return { image: src, embedded: true };
+  try {
+    const res = await fetch(src);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const blob = await res.blob();
+    if (!blob.type.startsWith("image/")) throw new Error("not an image");
+    return { image: await blobToDataURL(blob), embedded: true };
+  } catch {
+    return { image: src, embedded: false };
+  }
+}
+
+async function collectGames(zone, stats) {
+  const cards = [...zone.querySelectorAll(":scope > .game-card")];
+  return Promise.all(cards.map(async card => {
+    const { image, embedded } = await embedImage(card.querySelector("img").src);
+    if (!embedded) stats.linked++;
+    return { name: card.querySelector(".game-name").textContent, image };
+  }));
+}
+
+function downloadTextFile(text, fileName) {
+  const blob = new Blob([text], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.download = fileName;
+  link.href = url;
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+async function createPreset(type, button) {
+  const title = titleInput.value.trim() || "Tier List";
+  const stats = { linked: 0 };
+  const preset = { format: PRESET_FORMAT, version: PRESET_VERSION, type, title };
+
+  const saved = type === "tiers" ? "#tiers .game-card" : "#tiers .game-card, #game-bank .game-card";
+  if (!app.querySelector(saved)) {
+    alert(type === "tiers"
+      ? "There are no images in the tiers to save."
+      : "There are no images to save.");
+    return;
+  }
+
+  const label = button.textContent;
+  button.disabled = true;
+  button.textContent = "Saving…";
+  try {
+    if (type === "tiers") {
+      // Tiers and the images placed in them only; Unsorted is not saved.
+      preset.tiers = [];
+      for (const row of getTierRows()) {
+        preset.tiers.push({
+          label: row.querySelector(".tier-label").textContent.trim(),
+          color: row.dataset.color,
+          games: await collectGames(row.querySelector(".tier-items"), stats)
+        });
+      }
+    } else {
+      // Every image goes into one Unsorted list: first those placed in tiers
+      // (top tier first), then the ones already in Unsorted.
+      preset.unsorted = [];
+      for (const row of getTierRows()) {
+        preset.unsorted.push(...await collectGames(row.querySelector(".tier-items"), stats));
+      }
+      preset.unsorted.push(...await collectGames(bankElement, stats));
+    }
+
+    const safeTitle = title.replace(/[\\/:*?"<>|]+/g, "").trim() || "Tier List";
+    const kind = type === "tiers" ? "tiers" : "unsorted";
+    downloadTextFile(JSON.stringify(preset), `${safeTitle} (${kind} preset).json`);
+
+    if (stats.linked > 0) {
+      alert(
+        `${stats.linked} image(s) added by web link could not be embedded because their ` +
+        "site blocks it. They were saved as links and need an internet connection to show."
+      );
+    }
+  } catch (error) {
+    console.error("Preset export failed:", error);
+    alert("Could not create the preset.");
+  } finally {
+    button.disabled = false;
+    button.textContent = label;
+  }
+}
+
+// ----- Loading -----
+const presetColorPattern = /^#[0-9a-f]{6}$/i;
+const presetImagePattern = /^(data:image\/|https?:\/\/)/i;
+
+function cleanPresetGames(list) {
+  if (!Array.isArray(list)) return [];
+  return list
+    .filter(g => g && typeof g.image === "string" && presetImagePattern.test(g.image))
+    .map(g => ({
+      name: typeof g.name === "string" && g.name.trim() ? g.name.trim().slice(0, 200) : "Image",
+      image: g.image
+    }));
+}
+
+function addGameToZone(zone, game) {
+  const index = games.length;
+  games.push(game);
+  zone.append(createGameCard(game, index));
+}
+
+function clearTierList() {
+  app.querySelectorAll("#tiers .game-card, #game-bank .game-card").forEach(card => {
+    const img = card.querySelector("img");
+    if (img.src.startsWith("blob:")) URL.revokeObjectURL(img.src);
+  });
+  clearSelection();
+  getTierRows().forEach(row => row.remove());
+  bankElement.replaceChildren();
+  games.length = 0;
+}
+
+function loadTiersPreset(data) {
+  // Check everything first so a bad file never wipes the current tier list.
+  if (!Array.isArray(data.tiers) || data.tiers.length === 0) throw new Error("no tiers");
+  const tiers = data.tiers.map((t, i) => ({
+    label: (typeof t?.label === "string" && t.label.trim() ? t.label.trim() : `Tier ${i + 1}`).slice(0, 40),
+    color: typeof t?.color === "string" && presetColorPattern.test(t.color) ? t.color : pickNewTierColor(),
+    games: cleanPresetGames(t?.games)
+  }));
+  const unsorted = cleanPresetGames(data.unsorted);
+
+  if (app.querySelector(".game-card") &&
+      !confirm("Loading this preset replaces your current tier list. Continue?")) return;
+
+  clearTierList();
+  tiers.forEach(t => {
+    const row = createTier(t.label, t.color);
+    t.games.forEach(g => addGameToZone(row.querySelector(".tier-items"), g));
+  });
+  unsorted.forEach(g => addGameToZone(bankElement, g));
+
+  const title = typeof data.title === "string" && data.title.trim() ? data.title.trim() : "Tier List";
+  titleInput.value = title;
+  titleElement.textContent = title;
+  onTiersChanged();
+}
+
+function loadUnsortedPreset(data) {
+  const list = cleanPresetGames(data.unsorted);
+  if (list.length === 0) throw new Error("no images");
+  list.forEach(g => addGameToZone(bankElement, g));
+}
+
+saveTiersPresetBtn.addEventListener("click", () => createPreset("tiers", saveTiersPresetBtn));
+saveUnsortedPresetBtn.addEventListener("click", () => createPreset("unsorted", saveUnsortedPresetBtn));
+loadPresetBtn.addEventListener("click", () => presetFileInput.click());
+
+presetFileInput.addEventListener("change", async () => {
+  const file = presetFileInput.files[0];
+  presetFileInput.value = ""; // lets the same file be chosen again later
+  if (!file) return;
+  try {
+    const data = JSON.parse(await file.text());
+    if (!data || data.format !== PRESET_FORMAT) throw new Error("not a preset file");
+    if (data.version > PRESET_VERSION) throw new Error("preset is from a newer version");
+    if (data.type === "tiers") loadTiersPreset(data);
+    else if (data.type === "unsorted") loadUnsortedPreset(data);
+    else throw new Error("unknown preset type");
+  } catch (error) {
+    console.error("Preset load failed:", error);
+    alert("Could not load this file. Choose a preset file made with the preset buttons.");
+  }
 });
 
 // ---------- Download PNG ----------
