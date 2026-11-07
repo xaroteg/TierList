@@ -1,25 +1,23 @@
-const games = [];
-
 const defaultTiers = [
-  { label: "S", color: "#ff7f7f" },
-  { label: "A", color: "#ffbf7f" },
-  { label: "B", color: "#ffdf7f" },
-  { label: "C", color: "#bfff7f" },
-  { label: "D", color: "#7fffff" },
-  { label: "E", color: "#b9a0ff" },
-  { label: "F", color: "#ff9fd2" }
+  { label: "S", color: "#d39292" },
+  { label: "A", color: "#d3b092" },
+  { label: "B", color: "#d3c692" },
+  { label: "C", color: "#add392" },
+  { label: "D", color: "#92cdd3" },
+  { label: "E", color: "#ad92d3" },
+  { label: "F", color: "#d392b2" }
 ];
 
 // Colors offered to newly added tiers, in order. The first one not already
 // used by another tier is picked; after that, colors are generated.
 const extraTierColors = [
-  "#9fb8ff", // periwinkle
-  "#8fe3b0", // mint
-  "#ffc9a3", // peach
-  "#d9a7ff", // lilac
-  "#a3e4e1", // aqua
-  "#f2b8b8", // rose
-  "#c9e68f"  // lime
+  "#9eabd1", // periwinkle
+  "#9ed1b8", // mint
+  "#d1af9e", // peach
+  "#c49ed1", // lilac
+  "#9ed1cd", // aqua
+  "#d19ea6", // rose
+  "#c4d19e"  // lime
 ];
 
 const app = document.querySelector(".tierlist");
@@ -44,6 +42,7 @@ const refreshTierListBtn = document.querySelector("#refresh-tier-list");
 const addTierBtn = document.querySelector("#add-tier-btn");
 const selectedGames = new Set();
 let tierCounter = 0;
+let gameCounter = 0;
 
 // ---------- Zoom overlay ----------
 const zoomOverlay = document.createElement("div");
@@ -104,9 +103,9 @@ function pickNewTierColor() {
   const used = new Set(getTierRows().map(row => row.dataset.color));
   const unused = extraTierColors.find(color => !used.has(color));
   if (unused) return unused;
-  // Out of presets: spread hues around the wheel, pastel to match the others.
+  // Out of presets: spread hues around the wheel, muted to match the others.
   const hue = (getTierRows().length * 47) % 360;
-  return hslToHex(hue, 85, 75);
+  return hslToHex(hue, 38, 71);
 }
 
 function applyTierColor(row, color) {
@@ -119,13 +118,7 @@ function applyTierColor(row, color) {
 
 // ---------- Selection ----------
 function toggleSelection(card) {
-  if (selectedGames.has(card)) {
-    selectedGames.delete(card);
-    card.classList.remove("selected");
-  } else {
-    selectedGames.add(card);
-    card.classList.add("selected");
-  }
+  setSelected(card, !selectedGames.has(card));
   updateSelectionControls();
 }
 
@@ -146,23 +139,12 @@ function moveSelectedGames() {
     targetZone = row.querySelector(".tier-items");
   }
 
-  Array.from(selectedGames).forEach(card => {
-    targetZone.appendChild(card);
-    card.classList.remove("selected");
-  });
-
-  selectedGames.clear();
-  updateSelectionControls();
+  selectedGames.forEach(card => targetZone.appendChild(card));
+  clearSelection();
 }
 
 function removeSelectedGames() {
-  Array.from(selectedGames).forEach(card => {
-    const img = card.querySelector("img");
-    if (img.src.startsWith("blob:")) URL.revokeObjectURL(img.src);
-    card.remove();
-  });
-  selectedGames.clear();
-  updateSelectionControls();
+  [...selectedGames].forEach(removeGameCard);
 }
 
 // ---------- Names toggle ----------
@@ -296,11 +278,11 @@ defaultTiers.forEach(({ label, color }) => createTier(label, color));
 onTiersChanged();
 
 // ---------- Game cards ----------
-function createGameCard(game, index) {
+function createGameCard(game) {
   const card = document.createElement("div");
   card.className = "game-card";
   card.draggable = true;
-  card.dataset.id = `game-${index}`;
+  card.dataset.id = `game-${++gameCounter}`;
 
   card.addEventListener("click", e => {
     if (e.target.closest("button")) return;
@@ -381,9 +363,7 @@ function addImageFiles(files) {
       name: imageFiles.length === 1 && customName ? customName : filename,
       image: URL.createObjectURL(file)
     };
-    const index = games.length;
-    games.push(game);
-    bankElement.append(createGameCard(game, index));
+    bankElement.append(createGameCard(game));
   });
   nameInput.value = "";
   imageFileInput.value = "";
@@ -433,9 +413,7 @@ addGameForm.addEventListener("submit", e => {
     name: nameInput.value.trim() || "New Game",
     image: imageUrl
   };
-  const index = games.length;
-  games.push(game);
-  bankElement.append(createGameCard(game, index));
+  bankElement.append(createGameCard(game));
   addGameForm.reset();
   nameInput.value = "";
 });
@@ -462,26 +440,15 @@ document.addEventListener("keydown", e => {
 targetTierSelect.addEventListener("change", updateSelectionControls);
 moveSelectedBtn.addEventListener("click", moveSelectedGames);
 removeSelectedBtn.addEventListener("click", removeSelectedGames);
-// Select every image in the Unsorted area (replaces the current selection).
-selectAllBtn.addEventListener("click", () => {
-  selectedGames.forEach(card => card.classList.remove("selected"));
-  selectedGames.clear();
-  bankElement.querySelectorAll(".game-card").forEach(card => {
-    selectedGames.add(card);
-    card.classList.add("selected");
-  });
+// Replace the current selection with every image matching the selector.
+function selectOnly(selector) {
+  clearSelection();
+  app.querySelectorAll(selector).forEach(card => setSelected(card, true));
   updateSelectionControls();
-});
-// Select every image on the page: the ones in the tiers and the Unsorted ones.
-selectEverythingBtn.addEventListener("click", () => {
-  selectedGames.forEach(card => card.classList.remove("selected"));
-  selectedGames.clear();
-  app.querySelectorAll("#tiers .game-card, #game-bank .game-card").forEach(card => {
-    selectedGames.add(card);
-    card.classList.add("selected");
-  });
-  updateSelectionControls();
-});
+}
+selectAllBtn.addEventListener("click", () => selectOnly("#game-bank .game-card"));
+selectEverythingBtn.addEventListener("click", () => selectOnly("#tiers .game-card, #game-bank .game-card"));
+deselectAllBtn.addEventListener("click", clearSelection);
 
 // Put every image that sits in a tier back into Unsorted. Tier names, colors
 // and order are kept; nothing is deleted.
@@ -491,11 +458,6 @@ refreshTierListBtn.addEventListener("click", () => {
   if (!confirm("Move every image from the tiers back to Unsorted?")) return;
   placed.forEach(card => bankElement.append(card));
   clearSelection();
-});
-deselectAllBtn.addEventListener("click", () => {
-  selectedGames.forEach(card => card.classList.remove("selected"));
-  selectedGames.clear();
-  updateSelectionControls();
 });
 
 // Stop file drops from opening in the browser
@@ -846,20 +808,12 @@ function cleanPresetGames(list) {
 }
 
 function addGameToZone(zone, game) {
-  const index = games.length;
-  games.push(game);
-  zone.append(createGameCard(game, index));
+  zone.append(createGameCard(game));
 }
 
 function clearTierList() {
-  app.querySelectorAll("#tiers .game-card, #game-bank .game-card").forEach(card => {
-    const img = card.querySelector("img");
-    if (img.src.startsWith("blob:")) URL.revokeObjectURL(img.src);
-  });
-  clearSelection();
+  app.querySelectorAll("#tiers .game-card, #game-bank .game-card").forEach(removeGameCard);
   getTierRows().forEach(row => row.remove());
-  bankElement.replaceChildren();
-  games.length = 0;
 }
 
 function loadTiersPreset(data) {
