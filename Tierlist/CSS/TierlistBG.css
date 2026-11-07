@@ -22,6 +22,7 @@
   --tl-radius: 0px;
   --tl-radius-sm: 0px;
   --tl-font: system-ui, sans-serif;
+  --tl-card: 110px; /* minimum image size; images grow evenly to fill each row */
 
   box-sizing: border-box;
   max-width: 1400px;
@@ -160,7 +161,7 @@ body {
 
 /* ---------- Tier list frame ---------- */
 .tierlist #tiers {
-  padding: 12px;
+  padding: 0;
   border: 2px solid var(--tl-border-strong);
   border-radius: var(--tl-radius);
   background: var(--tl-bg);
@@ -168,16 +169,17 @@ body {
 
 .tierlist .tier {
   display: flex;
-  min-height: 110px;
-  margin-bottom: 10px;
+  min-height: var(--tl-card);
+  margin: 0;
   overflow: hidden;
-  border: 2px solid var(--tl-border-strong);
-  border-radius: var(--tl-radius-sm);
+  border: 0;
+  border-bottom: 2px solid var(--tl-border-strong);
+  border-radius: 0;
   background: var(--tl-surface);
 }
 
 .tierlist .tier:last-child {
-  margin-bottom: 0;
+  border-bottom: 0;
 }
 
 .tierlist .tier-label {
@@ -206,14 +208,14 @@ body {
 
 .tierlist .tier-items,
 .tierlist .bank-items {
-  display: flex;
+  display: grid;
   flex: 1;
-  flex-wrap: wrap;
-  align-content: flex-start;
-  gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(var(--tl-card), 1fr));
+  align-content: start;
+  gap: 0;
   min-width: 0;
-  min-height: 110px;
-  padding: 8px;
+  min-height: var(--tl-card);
+  padding: 0;
 }
 
 .tierlist .tier-items {
@@ -232,8 +234,8 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 5px;
-  padding: 6px;
+  gap: 4px;
+  padding: 4px;
   border-left: 1px solid var(--tl-border);
   background: var(--tl-surface-2);
 }
@@ -242,7 +244,7 @@ body {
   display: grid;
   place-items: center;
   width: 28px;
-  height: 24px;
+  height: 20px;
   padding: 0;
   border: 1px solid var(--tl-border-strong);
   border-radius: 0;
@@ -276,7 +278,7 @@ body {
 
 .tierlist .tier-color-input {
   width: 28px;
-  height: 28px;
+  height: 24px;
   padding: 0;
   border: 2px solid var(--tl-border-strong);
   border-radius: 0;
@@ -311,8 +313,8 @@ body {
 /* ---------- Cards ---------- */
 .tierlist .game-card {
   position: relative;
-  height: 110px;
-  flex: 0 0 110px;
+  aspect-ratio: 1 / 1;
+  min-width: 0;
   overflow: hidden;
   border-radius: var(--tl-radius-sm);
   background: var(--tl-surface);
@@ -321,6 +323,8 @@ body {
 }
 
 .tierlist .game-card img {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
@@ -333,8 +337,17 @@ body {
 }
 
 .tierlist .game-card.selected {
-  outline: 2px solid var(--tl-accent-soft);
-  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.35);
+  outline: 3px solid var(--tl-accent-soft);
+  outline-offset: -3px;
+}
+
+.tierlist .game-card.selected::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: rgba(79, 70, 229, 0.3);
+  pointer-events: none;
 }
 
 .tierlist .game-card.dragging {
@@ -674,9 +687,8 @@ body {
     padding: 14px;
   }
 
-  .tierlist .game-card {
-    height: 68px;
-    flex-basis: 68px;
+  .tierlist {
+    --tl-card: 68px;
   }
 
   .tierlist .zoom-game-button {
@@ -696,8 +708,20 @@ body {
   }
 
   .tierlist .tier-controls {
-    flex-basis: 38px;
+    display: grid;
+    flex-basis: 64px;
+    grid-template-columns: repeat(2, 24px);
+    grid-auto-rows: 24px;
+    gap: 4px;
+    align-content: center;
+    justify-content: center;
     padding: 4px;
+  }
+
+  .tierlist .tier-btn,
+  .tierlist .tier-color-input {
+    width: 24px;
+    height: 24px;
   }
 
   .tierlist .bank-content {
