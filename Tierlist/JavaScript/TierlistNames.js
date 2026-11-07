@@ -6,13 +6,13 @@ const defaultTiers = [
   { label: "B", color: "#ffdf7f" },
   { label: "C", color: "#bfff7f" },
   { label: "D", color: "#7fffff" },
-  { label: "F", color: "#b9a0ff" }
+  { label: "E", color: "#b9a0ff" },
+  { label: "F", color: "#ff9fd2" }
 ];
 
 // Colors offered to newly added tiers, in order. The first one not already
 // used by another tier is picked; after that, colors are generated.
 const extraTierColors = [
-  "#ff9fd2", // pink
   "#9fb8ff", // periwinkle
   "#8fe3b0", // mint
   "#ffc9a3", // peach
